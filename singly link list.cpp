@@ -106,8 +106,9 @@ public:
 				previous = current;
 				current = current->link;
 				delete previous;
-				count--;
 			}
+			count=0;
+			first=last=nullptr;
 			cout << "list destruction succeed\n";
 		}
 	}
