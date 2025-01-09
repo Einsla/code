@@ -25,6 +25,7 @@ class stack {
 		}
 
 		Type Top() {
+			assert(top != nullptr);
 			return top->data;
 		}
 		void Push(Type item) {
