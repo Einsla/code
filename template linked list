@@ -11,147 +11,173 @@ struct Node {
 
 template <typename T>
 class list {
-	protected:
-		Node<T> *first, *last, *current, *previous;
-		int count;
-	public:
-		//constructor & destructor
-		list() {
-			first = last = current = previous = nullptr;
-			count = 0;
+private:
+	Node<T>* first, * last, * current, * previous;
+	int count;
+public:
+	//constructor & destructor
+	list() {
+		first = last = current = previous = nullptr;
+		count = 0;
+	}
+	~list() {
+		destroy();
+	}
+
+	void insert(T& item) {
+		Node<T>* newNode;
+		newNode = new Node<T>;
+		assert(newNode != nullptr);
+		newNode->info = item;
+		newNode->link = nullptr;
+		if (first == nullptr) {
+			first = last = newNode;
 		}
-		~list() {
-			destroy();
-		}
-		void insert(T &item) {
-			Node<T>* newNode;
-			newNode = new Node<T>;
-			assert(newNode != nullptr);
-			newNode->info = item;
-			newNode->link = nullptr;
-			if (first == nullptr) {
-				first = last = newNode;
-			}
-			else {
-				current = first;
-				while (current != nullptr) {
-					if (current->info >= item) {
-						newNode->link = current;
-						if (current == first) {
-							first = newNode;
-							break;
-						}
-						previous->link = newNode;
+		else {
+			current = first;
+			while (current != nullptr) {
+				if (current->info >= item) {
+					newNode->link = current;
+					if (current == first) {
+						first = newNode;
 						break;
 					}
+					previous->link = newNode;
+					break;
+				}
+				else {
+					if (current != last) {
+						previous = current;
+						current = current->link;
+					}
 					else {
-						if (current != last) {
-							previous = current;
-							current = current->link;
-						}
-						else {
-							current->link = newNode;
-							last = newNode;
-							break;
-						}
+						current->link = newNode;
+						last = newNode;
+						break;
 					}
 				}
 			}
-			count++;
-			cout << "item appended succeed\n";
 		}
-		void deleted(T& item) {
-			bool found = false;
-			if (first == nullptr) {
-				cout << "no list detected\n";
+		count++;
+		cout << "item appended succeed\n";
+	}
+	void deleted(T& item) {
+		bool found = false;
+		if (first == nullptr) {
+			cout << "no list detected\n";
+		}
+		else {
+			current = first;
+			if (first->info == item) {
+				first = current->link;
+				delete current;
+				count--;
+				found = true;
 			}
 			else {
-				current = first;
-				if (first->info == item) {
-					first = current->link;
-					delete current;
-					count--;
-					found = true;
-				}
-				else {
-					while (current != nullptr) {
-						if (current->info == item) {
-							previous->link = current->link;
-							if (current == last) {
-								last = previous;
-							}
-							delete current;
-							count--;
-							found = true;
-							break;
-						}
-						else {
-							previous = current;
-							current = current->link;
-						}
-					}
-				}
-				if (!found) {
-					cout << "item requested is not in list\n";
-				}
-				else {
-					cout << "deletion succeed\n";
-				}
-			}
-		}
-		void find(T& item) {
-			bool found = false;
-			int i = 1;
-			if (first == nullptr) {
-				cout << "no list detected\n";
-			}
-			else {
-				current = first;
 				while (current != nullptr) {
 					if (current->info == item) {
+						previous->link = current->link;
+						if (current == last) {
+							last = previous;
+						}
+						delete current;
+						count--;
 						found = true;
 						break;
 					}
 					else {
 						previous = current;
 						current = current->link;
-						i++;
 					}
 				}
-				if (!found) {
-					cout << "item requested is not in list\n";
-				}
-				else {
-					cout << "item requested "<<item<<" is in box "<<i<<"\n";
-				}
 			}
-		}
-		void print() {
-			int i = 1;
-			if (first == nullptr) {
-				cout << "no list detected\n";
+			if (!found) {
+				cout << "item requested is not in list\n";
 			}
 			else {
-				current = first;
-				while (current != nullptr) {
-					cout << "Box " << i << " item is " << current->info << endl;
-					i++;
-					current = current->link;
-				}
+				cout << "deletion succeed\n";
 			}
-			
 		}
-		void destroy() {
+	}
+	void find(T& item) {
+		bool found = false;
+		int i = 1;
+		if (first == nullptr) {
+			cout << "no list detected\n";
+		}
+		else {
 			current = first;
 			while (current != nullptr) {
-				previous = current;
-				current = current->link;
-				delete previous;
+				if (current->info == item) {
+					found = true;
+					break;
+				}
+				else {
+					previous = current;
+					current = current->link;
+					i++;
+				}
 			}
-			count = 0;
-			first = last = nullptr;
-			cout << "destruction succeed\n";
+			if (!found) {
+				cout << "item requested is not in list\n";
+			}
+			else {
+				cout << "item requested " << item << " is in box " << i << "\n";
+			}
 		}
+	}
+	void print() {
+		int i = 1;
+		if (first == nullptr) {
+			cout << "no list detected\n";
+		}
+		else {
+			current = first;
+			while (current != nullptr) {
+				cout << "Box " << i << " item is " << current->info << endl;
+				i++;
+				current = current->link;
+			}
+		}
+
+	}
+	void destroy() {
+		current = first;
+		while (current != nullptr) {
+			previous = current;
+			current = current->link;
+			delete previous;
+		}
+		count = 0;
+		first = last = nullptr;
+		cout << "destruction succeed\n";
+	}
+
+	list<T>& operator=(list<T>& obj) {
+		if (this != &obj) {
+			destroy();
+			obj.current = obj.first;
+			while (obj.current != nullptr) {
+				Node<T> *newNode;
+				newNode = new Node<T>;
+				assert(newNode != nullptr);
+				newNode->info = obj.current->info;
+				newNode->link = nullptr;
+
+				if (first == nullptr) {
+					first = last = newNode;
+				}
+				else {
+					last->link = newNode;
+					last = newNode;
+				}
+				count++;
+				obj.current = obj.current->link;
+			}
+		}
+		return *this;
+	}
 };
 
 int main() {
