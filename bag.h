@@ -1,3 +1,6 @@
+//this is a note: rmb to comment out the main function in order to use this header
+
+
 #pragma once
 #include <iostream>
 #include "item.h"
